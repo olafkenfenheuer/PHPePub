@@ -86,6 +86,13 @@ class MetaValue {
             $this->opfAttr[$opfAttrName] = $opfAttrValue;
         }
     }
+    
+    function myEach(&$arr) {
+    $key = key($arr);
+    $result = ($key === null) ? false : [$key, current($arr), 'key' => $key, 'value' => current($arr)];
+    next($arr);
+    return $result;
+    }
 
     /**
      *
@@ -97,13 +104,13 @@ class MetaValue {
         $dc = "\t\t<" . $this->tagName;
 
         if (sizeof($this->attr) > 0) {
-            while (list($name, $content) = each($this->attr)) {
+            while (list($name, $content) = $this->myEach($this->attr)) {
                 $dc .= " " . $name . "=\"" . $content . "\"";
             }
         }
 
         if ($bookVersion === EPub::BOOK_VERSION_EPUB2 && sizeof($this->opfAttr) > 0) {
-            while (list($name, $content) = each($this->opfAttr)) {
+            while (list($name, $content) = $this->myEach($this->opfAttr)) {
                 $dc .= " opf:" . $name . "=\"" . $content . "\"";
             }
         }
