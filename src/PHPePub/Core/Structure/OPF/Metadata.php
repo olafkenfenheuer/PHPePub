@@ -92,6 +92,14 @@ class Metadata {
             $this->namespaces[$nsName] = $nsURI;
         }
     }
+    
+    
+    function myEach(&$arr) {
+    $key = key($arr);
+    $result = ($key === null) ? false : [$key, current($arr), 'key' => $key, 'value' => current($arr)];
+    next($arr);
+    return $result;
+    }
 
     /**
      *
@@ -123,12 +131,12 @@ class Metadata {
         }
 
         foreach ($this->metaProperties as $data) {
-            list($name, $content) = each($data);
+            list($name, $content) = $this->myEach($data);
             $metadata .= "\t\t<meta property=\"" . $name . "\">" . $content . "</meta>\n";
         }
 
         foreach ($this->meta as $data) {
-            list($name, $content) = each($data);
+            list($name, $content) = $this->myEach($data);
             $metadata .= "\t\t<meta name=\"" . $name . "\" content=\"" . $content . "\" />\n";
         }
 
