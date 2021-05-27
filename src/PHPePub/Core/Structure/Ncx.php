@@ -292,7 +292,7 @@ class Ncx {
 
         if (sizeof($this->meta)) {
             foreach ($this->meta as $metaEntry) {
-                list($name, $content) = each($metaEntry);
+                list($name, $content) = $this->myEach($metaEntry);
                 $ncx .= "\t\t<meta name=\"" . $name . "\" content=\"" . $content . "\" />\n";
             }
         }
@@ -343,6 +343,14 @@ class Ncx {
 
         return $end;
     }
+    
+    
+    function myEach(&$arr) {
+    $key = key($arr);
+    $result = ($key === null) ? false : [$key, current($arr), 'key' => $key, 'value' => current($arr)];
+    next($arr);
+    return $result;
+    }
 
     /**
      * Build the references for the ePub 2 toc.
@@ -355,7 +363,7 @@ class Ncx {
             $this->rootLevel();
             $this->subLevel($this->referencesTitle, $this->referencesId, $this->referencesClass);
             $refId = 1;
-            while (list($item, $descriptive) = each($this->referencesOrder)) {
+            while (list($item, $descriptive) = $this->myEach($this->referencesOrder)) {
                 if (array_key_exists($item, $this->referencesList)) {
                     $name = (empty($this->referencesName[$item]) ? $descriptive : $this->referencesName[$item]);
                     $navPoint = new NavPoint($name, $this->referencesList[$item], "ref-" . $refId++);
@@ -380,7 +388,7 @@ class Ncx {
                 . "\t\t\t\t<ol>\n";
 
             $li = "";
-            while (list($item, $descriptive) = each($this->referencesOrder)) {
+            while (list($item, $descriptive) = $this->myEach($this->referencesOrder)) {
                 if (array_key_exists($item, $this->referencesList)) {
                     $li .= "\t\t\t\t\t<li><a epub:type=\""
                         . $item
