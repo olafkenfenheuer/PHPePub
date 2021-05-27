@@ -222,6 +222,14 @@ class EPub {
         unset($this->buildTOC, $this->tocTitle, $this->tocCSSClass, $this->tocAddReferences);
         unset($this->tocFileName, $this->tocCssFileName, $this->viewport);
     }
+    
+    
+    function myEach(&$arr) {
+    $key = key($arr);
+    $result = ($key === null) ? false : [$key, current($arr), 'key' => $key, 'value' => current($arr)];
+    next($arr);
+    return $result;
+    }
 
     /**
      * Add a chapter to the book, as a chapter should not exceed 250kB, you can parse an array with multiple parts as $chapterData.
@@ -284,7 +292,8 @@ class EPub {
             $partCount = 0;
             $this->chapterCount++;
 
-            $oneChapter = each($chapter);
+            //$oneChapter = each($chapter);
+            $oneChapter = $this->myEach($chapter);
             while ($oneChapter) {
                 /** @noinspection PhpUnusedLocalVariableInspection */
                 list($k, $v) = $oneChapter;
@@ -302,7 +311,7 @@ class EPub {
 
                 $this->opf->addItemRef($partName);
 
-                $oneChapter = each($chapter);
+                $oneChapter = $this->myEach($chapter); //each($chapter);
             }
             $partName = $name . "_1." . $extension;
             $navPoint = new NavPoint(StringHelper::decodeHtmlEntities($chapterName), $partName, $partName);
@@ -2058,7 +2067,7 @@ class EPub {
         }
 
         reset($this->ncx->chapterList);
-        list($firstChapterName, $firstChapterNavPoint) = each($this->ncx->chapterList);
+        list($firstChapterName, $firstChapterNavPoint) = $this->myEach($this->ncx->chapterList); //each($this->ncx->chapterList);
         /** @var $firstChapterNavPoint NavPoint */
         $firstChapterFileName = $firstChapterNavPoint->getContentSrc();
         $this->opf->addReference(Reference::TEXT, StringHelper::decodeHtmlEntities($firstChapterName), $firstChapterFileName);
@@ -2156,9 +2165,9 @@ class EPub {
         }
         $tocData .= ">\n";
 
-        while (list($item, $descriptive) = each($this->referencesOrder)) {
+        while (list($item, $descriptive) = $this->myEach($this->referencesOrder)) {
             if ($item === "text") {
-                while (list($chapterName, $navPoint) = each($this->ncx->chapterList)) {
+                while (list($chapterName, $navPoint) = $this->myEach($this->ncx->chapterList)) {
                     /** @var $navPoint NavPoint */
                     $fileName = $navPoint->getContentSrc();
                     $level = $navPoint->getLevel() - 2;
